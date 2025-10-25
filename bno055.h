@@ -140,8 +140,31 @@ typedef enum {
 	/** ACC RADIUS DATA REGISTERS **/
 	BNO_MAG_RADIUS_LSB_ADDR   = 0x69,
 	BNO_MAG_RADIUS_MSB_ADDR   = 0x6A
-
 }BNO_Regs_t;
+
+/** Axis Remap Configurations **/
+typedef enum {
+	BNO_REMAP_CONFIG_P0 = 0x21,
+	BNO_REMAP_CONFIG_P1 = 0x24, // default positioning
+	BNO_REMAP_CONFIG_P2 = 0x24,
+	BNO_REMAP_CONFIG_P3 = 0x21,
+	BNO_REMAP_CONFIG_P4 = 0x24,
+	BNO_REMAP_CONFIG_P5 = 0x21,
+	BNO_REMAP_CONFIG_P6 = 0x21,
+	BNO_REMAP_CONFIG_P7 = 0x24
+}BNO_Axis_Remap_t;
+
+/** Axis Remap Sign Configurations **/
+typedef enum {
+  REMAP_SIGN_P0 = 0x04,
+  REMAP_SIGN_P1 = 0x00, // default
+  REMAP_SIGN_P2 = 0x06,
+  REMAP_SIGN_P3 = 0x02,
+  REMAP_SIGN_P4 = 0x03,
+  REMAP_SIGN_P5 = 0x01,
+  REMAP_SIGN_P6 = 0x07,
+  REMAP_SIGN_P7 = 0x05
+} BNO_Axis_Remap_Sign_t;
 
 /* ---- BNO055 Types of Modes ---*/
 typedef enum {
@@ -158,7 +181,7 @@ typedef enum {
      BNO_MODE_M4G           = 0x0A,
      BNO_MODE_NDOF_FMC_OFF  = 0x0B,
      BNO_MODE_NDOF          = 0x0C
-} BNO_MODE_t;
+} BNO_Mode_t;
 
 /* --- BNO055 custom return status --- */
 typedef enum {
@@ -168,14 +191,28 @@ typedef enum {
 
 BNO_StatusTypeDef bno_Init(I2C_HandleTypeDef *hi2c, BNO_MODE_t mode);
 void bno_SetI2CHandle(I2C_HandleTypeDef *hi2c);
+
 BNO_StatusTypeDef bno_SetMode(BNO_MODE_t mode);
 BNO_StatusTypeDef bno_GetMode(BNO_MODE_t *pMode);
+
 BNO_StatusTypeDef bno_Get_ChipID(uint8_t *chipID);
 BNO_StatusTypeDef bno_Get_ACCChipID(uint8_t *accID);
 BNO_StatusTypeDef bno_Get_MAGChipID(uint8_t *magID);
 BNO_StatusTypeDef bno_Get_GYRChipID(uint8_t *gyrID);
+
 BNO_StatusTypeDef bno_Get_SW_Rev(uint16_t *sw_rev);
 BNO_StatusTypeDef bno_Get_BL_Ver(uint8_t *bl_ver);
+
+BNO_StatusTypeDef bno_SetAxisRemap(BNO_Axis_Remap_t remapcode);
+BNO_StatusTypeDef bno_SetAxisRemapSign(BNO_Axis_Remap_Sign_t  remapsign);
+
+BNO_StatusTypeDef bno_setExtCrystalUse(bool use_external);
+
+BNO_StatusTypeDef bno_GetSystemStatus(uint8_t *system_status, uint8_t *self_test_result, uint8_t *system_error);
+BNO_StatusTypeDef bno_getCalibraiton(uint8_t *sys, uint8_t *gyro, uint8_t *accel, uint8_t *mag);
+
+BNO_StatusTypeDef bno_getTemperature(int8_t *tempdata)
+
 BNO_StatusTypeDef bno_Write(uint8_t reg, uint8_t value);
 BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value);
 
