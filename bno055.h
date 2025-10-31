@@ -215,6 +215,7 @@ BNO_StatusTypeDef bno_getTemperature(int8_t *tempdata)
 
 BNO_StatusTypeDef bno_Write(uint8_t reg, uint8_t value);
 BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value);
+BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *value, int numberofBytes);
 
 
 #endif /* BNO055_H_ */

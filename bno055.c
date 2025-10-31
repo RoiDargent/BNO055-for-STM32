@@ -285,4 +285,14 @@ BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value) {
     }
 }
 
+/** BNO055 function to read multiple bytes**/
+BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *value, int numberofBytes) {
+    if (bno_i2c == NULL) return BNO_ERR;
+
+    if (HAL_I2C_Mem_Read(bno_i2c, BNO055_ADDR, reg, I2C_MEMADD_SIZE_8BIT, value, numberofBytes, HAL_MAX_DELAY) == HAL_OK) {
+        return BNO_OK;
+    } else {
+        return BNO_ERR;
+    }
+}
 
