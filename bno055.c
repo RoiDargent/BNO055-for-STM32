@@ -275,10 +275,10 @@ BNO_StatusTypeDef bno_Write(uint8_t reg, uint8_t value) {
 }
 
 /* --- BNO055 function to read 8-bit --- */
-BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value) {
+BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *buffer) {
     if (bno_i2c == NULL) return BNO_ERR;
 
-    if (HAL_I2C_Mem_Read(bno_i2c, BNO055_ADDR, reg, I2C_MEMADD_SIZE_8BIT, value, 1, HAL_MAX_DELAY) == HAL_OK) {
+    if (HAL_I2C_Mem_Read(bno_i2c, BNO055_ADDR, reg, I2C_MEMADD_SIZE_8BIT, buffer, 1, HAL_MAX_DELAY) == HAL_OK) {
         return BNO_OK;
     } else {
         return BNO_ERR;
@@ -286,13 +286,169 @@ BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value) {
 }
 
 /** BNO055 function to read multiple bytes**/
-BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *value, int numberofBytes) {
+BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *buffer, int numberofBytes) {
     if (bno_i2c == NULL) return BNO_ERR;
+    if (buffer == NULL) return BNO_ERR;
 
-    if (HAL_I2C_Mem_Read(bno_i2c, BNO055_ADDR, reg, I2C_MEMADD_SIZE_8BIT, value, numberofBytes, HAL_MAX_DELAY) == HAL_OK) {
+    if (HAL_I2C_Mem_Read(bno_i2c, BNO055_ADDR, reg, I2C_MEMADD_SIZE_8BIT, buffer, numberofBytes, HAL_MAX_DELAY) == HAL_OK) {
         return BNO_OK;
     } else {
         return BNO_ERR;
     }
 }
+
+/** BNO055 function to read accleration data **/
+BNO_StatusTypeDef bno_readAccelleration(float* accel_data){
+	if(accel_data == NULL) return BNO_ERR;
+	uint8_t buffer[6];
+
+	if (bno_ReadMultiple(BNO_ACC_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+		return BNO_ERR;
+
+
+	int16_t rawX = buffer[0] | (buffer[1] << 8);
+	int16_t rawY = buffer[2] | (buffer[3] << 8) ;
+	int16_t rawZ = buffer[4] | (buffer[5] << 8);
+
+	accel_data[0] = rawX / 100.0f;
+	accel_data[1] = rawY / 100.0f;
+	accel_data[2] = rawZ / 100.0f;
+
+	return BNO_OK;
+}
+
+/** BNO055 function to read magnetometer data **/
+BNO_StatusTypeDef bno_readMagnetometer(float* mag_data){
+	if(mag_data == NULL) return BNO_ERR;
+	uint8_t buffer[6];
+
+	if (bno_ReadMultiple(BNO_MAG_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+		return BNO_ERR;
+
+
+	int16_t rawX = buffer[0] | (buffer[1] << 8);
+	int16_t rawY = buffer[2] | (buffer[3] << 8) ;
+	int16_t rawZ = buffer[4] | (buffer[5] << 8);
+
+	mag_data[0] = rawX / 16.0f;
+	mag_data[1] = rawY / 16.0f;
+	mag_data[2] = rawZ / 16.0f;
+
+	return BNO_OK;
+}
+
+/** BNO055 function to read gyro data **/
+BNO_StatusTypeDef bno_readGyro(float* gyro_data){
+    if(gyro_data == NULL)
+        return BNO_ERR;
+
+    uint8_t buffer[6];
+
+    if (bno_ReadMultiple(BNO_GYR_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+        return BNO_ERR;
+
+    // Signed raw values
+    int16_t rawX = (int16_t)(buffer[0] | (buffer[1] << 8));
+    int16_t rawY = (int16_t)(buffer[2] | (buffer[3] << 8));
+    int16_t rawZ = (int16_t)(buffer[4] | (buffer[5] << 8));
+
+    // Convert to degrees per second
+    gyro_data[0] = rawX / 16.0f;
+    gyro_data[1] = rawY / 16.0f;
+    gyro_data[2] = rawZ / 16.0f;
+
+    return BNO_OK;
+}
+
+/** BNO055 function to read euler data **/
+BNO_StatusTypeDef bno_readEuler(float* euler_data){
+    if(euler_data == NULL)
+        return BNO_ERR;
+
+    uint8_t buffer[6];
+
+    if (bno_ReadMultiple(BNO_EUL_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+        return BNO_ERR;
+
+    // Raw values (Euler is usually unsigned, but signed cast is harmless)
+    int16_t rawX = (int16_t)(buffer[0] | (buffer[1] << 8)); // Heading (Yaw)
+    int16_t rawY = (int16_t)(buffer[2] | (buffer[3] << 8)); // Roll
+    int16_t rawZ = (int16_t)(buffer[4] | (buffer[5] << 8)); // Pitch
+
+    euler_data[0] = rawX / 16.0f;  // degrees
+    euler_data[1] = rawY / 16.0f;  // degrees
+    euler_data[2] = rawZ / 16.0f;  // degrees
+
+    return BNO_OK;
+}
+
+/** BNO055 function to read linear accleration data **/
+BNO_StatusTypeDef bno_readLinearAccelleration(float* lin_accel_data){
+	if(lin_accel_data == NULL) return BNO_ERR;
+	uint8_t buffer[6];
+
+	if (bno_ReadMultiple(BNO_LIA_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+		return BNO_ERR;
+
+
+	int16_t rawX = buffer[0] | (buffer[1] << 8);
+	int16_t rawY = buffer[2] | (buffer[3] << 8) ;
+	int16_t rawZ = buffer[4] | (buffer[5] << 8);
+
+	lin_accel_data[0] = rawX / 100.0f;
+	lin_accel_data[1] = rawY / 100.0f;
+	lin_accel_data[2] = rawZ / 100.0f;
+
+	return BNO_OK;
+}
+
+/** BNO055 function to read gravity data **/
+BNO_StatusTypeDef bno_readGravity(float* gravity_data){
+	if(gravity_data == NULL) return BNO_ERR;
+	uint8_t buffer[6];
+
+	if (bno_ReadMultiple(BNO_GRV_DATA_X_LSB_ADDR, buffer, 6) != HAL_OK)
+		return BNO_ERR;
+
+
+	int16_t rawX = buffer[0] | (buffer[1] << 8);
+	int16_t rawY = buffer[2] | (buffer[3] << 8) ;
+	int16_t rawZ = buffer[4] | (buffer[5] << 8);
+
+	gravity_data[0] = rawX / 100.0f;
+	gravity_data[1] = rawY / 100.0f;
+	gravity_data[2] = rawZ / 100.0f;
+
+	return BNO_OK;
+}
+
+/** BNO055 function to read quaternion data **/
+BNO_StatusTypeDef bno_readQuaternion(float* quat_data) {
+    if(quat_data == NULL)
+        return BNO_ERR;
+
+    uint8_t buffer[8];
+
+    // 8 byte quaternion data: W LSB, W MSB, X LSB, X MSB, Y LSB, Y MSB, Z LSB, Z MSB
+    if (bno_ReadMultiple(BNO_QUA_DATA_W_LSB_ADDR, buffer, 8) != HAL_OK)
+        return BNO_ERR;
+
+    // Convert to signed 16-bit values
+    int16_t w = (int16_t)((buffer[1] << 8) | buffer[0]);
+    int16_t x = (int16_t)((buffer[3] << 8) | buffer[2]);
+    int16_t y = (int16_t)((buffer[5] << 8) | buffer[4]);
+    int16_t z = (int16_t)((buffer[7] << 8) | buffer[6]);
+
+    // Scale: 1 / (1 << 14) = 1 / 16384
+    const float scale = 1.0f / 16384.0f;
+
+    // Assign scaled quaternion values
+    quat_data[0] = w * scale;
+    quat_data[1] = x * scale;
+    quat_data[2] = y * scale;
+    quat_data[3] = z * scale;
+
+    return BNO_OK;
+}
+
 

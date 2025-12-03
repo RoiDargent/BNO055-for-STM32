@@ -214,8 +214,16 @@ BNO_StatusTypeDef bno_getCalibraiton(uint8_t *sys, uint8_t *gyro, uint8_t *accel
 BNO_StatusTypeDef bno_getTemperature(int8_t *tempdata)
 
 BNO_StatusTypeDef bno_Write(uint8_t reg, uint8_t value);
-BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *value);
-BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *value, int numberofBytes);
+BNO_StatusTypeDef bno_Read(uint8_t reg, uint8_t *buffer);
+BNO_StatusTypeDef bno_ReadMultiple(uint8_t reg, uint8_t *buffer, int numberofBytes);
+
+BNO_StatusTypeDef bno_readAccelleration(float* accel_data);
+BNO_StatusTypeDef bno_readMagnetometer(float* mag_data);
+BNO_StatusTypeDef bno_readGyro(float* gyro_data);
+BNO_StatusTypeDef bno_readEuler(float* euler_data);
+BNO_StatusTypeDef bno_readLinearAccelleration(float* lin_accel_data);
+BNO_StatusTypeDef bno_readGravity(float* gravity_data);
+BNO_StatusTypeDef bno_readQuaternion(float* quat_data);
 
 
 #endif /* BNO055_H_ */
