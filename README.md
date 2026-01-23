@@ -56,7 +56,7 @@ void Read_Sensor_Data(void) {
     
     // Use the data...
     // printf("Heading: %.2f\n", euler_angles[0]);
-}´´´
+}```
 
 ## Important Notes
 HAL Delay: The library uses HAL_Delay() for timing requirements during mode switches. Be cautious when calling these functions inside Interrupt Service Routines (ISRs).
