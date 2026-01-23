@@ -56,7 +56,7 @@ void Read_Sensor_Data(void) {
     
     // Use the data...
     // printf("Heading: %.2f\n", euler_angles[0]);
-}
+}```
 
 ## Calibration (Important)
 The BNO055 attempts to calibrate itself on every power-up, which can take time and movement. You can read the calibration offsets once the sensor is fully calibrated, save them to non-volatile memory (EEPROM/Flash), and restore them on the next boot.
