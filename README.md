@@ -58,30 +58,6 @@ void Read_Sensor_Data(void) {
     // printf("Heading: %.2f\n", euler_angles[0]);
 }´´´
 
-## Calibration (Important)
-The BNO055 attempts to calibrate itself on every power-up, which can take time and movement. You can read the calibration offsets once the sensor is fully calibrated, save them to non-volatile memory (EEPROM/Flash), and restore them on the next boot.
-Saving a Calibration Profile:
-BNO055_Offsets_t saved_offsets;
-uint8_t sys, gyro, accel, mag;
-
-/* Wait until the sensor is fully calibrated (All values must be 3) */
-getCalibration(&sys, &gyro, &accel, &mag);
-
-if(sys == 3 && gyro == 3 && accel == 3 && mag == 3) {
-    /* Get calibration data into the struct */
-    getSensorOffsets(&saved_offsets);
-    
-    /* TODO: Save 'saved_offsets' struct to Flash memory or EEPROM */
-}
-
-Loading a Calibration Profile (On Startup):
-
-/* TODO: Read data from Flash/EEPROM */
-BNO055_Offsets_t load_offsets = ...;
-
-/* Upload offsets to the sensor */
-setSensorOffsets(&load_offsets);
-
 ## Important Notes
 HAL Delay: The library uses HAL_Delay() for timing requirements during mode switches. Be cautious when calling these functions inside Interrupt Service Routines (ISRs).
 I2C Timeout: The default timeout is 100ms. If you experience I2C communication errors, consider increasing BNO055_I2C_TIMEOUT in bno055.h.
